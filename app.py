@@ -24,7 +24,7 @@ def generate_odds_dataframe(increment=0.01):
 
 # Create the Streamlit app
 def main():
-    st.title("Sports Betting Profit Calculator")
+    st.title("Sports Betting Back/Lay Calculator")
 
     # Taking inputs for stake and odds from the sportsbook
     sportsbook_stake = st.number_input("Enter the stake at the sportsbook:", value=100.0, step=0.01)
@@ -43,22 +43,24 @@ def main():
 
     # Calculate the potential returns
     sportsbook_win_return = sportsbook_stake * sportsbook_odds
-    lay_win_return = lay_potential_winnings * matched_lay_odds
-    lay_win_return_with_commission = lay_win_return - (lay_win_return * 0.02)
+    lay_win_return = lay_potential_winnings
+    lay_win_return_with_commission = lay_potential_winnings - (lay_potential_winnings * 0.02)
 
     # Calculate the overall stake
-    overall_stake = round(sportsbook_stake + ((lay_potential_winnings * matched_lay_odds) - lay_potential_winnings), 0)
+    overall_stake = round(sportsbook_stake + ((lay_potential_winnings * matched_lay_odds) - lay_potential_winnings), 2)
 
     # Calculate the margins
     margin_if_sportsbook_wins = round(1 - (overall_stake / sportsbook_win_return), 4)
-    margin_if_lay_wins = round(1 - (overall_stake / lay_win_return_with_commission), 4)
+    margin_if_lay_wins = round(1 - (sportsbook_stake / lay_win_return_with_commission), 4)
 
-    st.write(f"The lay odds that result in at least 1% profit if the lay wins and sportsbook loses: {matched_lay_odds:.2f}")
-    st.write(f"Lay stake required to achieve the profit: {abs(overall_stake - sportsbook_stake):.2f}")
+    st.write(
+        f"The lay odds that result in at least 1% profit if the lay wins and sportsbook loses: {matched_lay_odds:.2f}")
+    st.write(f"Liability on lay required to achieve the profit: {abs(overall_stake - sportsbook_stake):.2f}")
+    st.write(f"The lay stake should be: {lay_potential_winnings:.2f}")
     st.write(f"Overall Stake: {overall_stake:.4f}")
     st.write(f"Return if Sportsbook wins: {sportsbook_win_return - overall_stake :.4f}")
     st.write(f"Margin if Sportsbook wins: {margin_if_sportsbook_wins:.4f}%")
-    st.write(f"Return if Lay wins: {lay_win_return_with_commission - overall_stake :.4f}")
+    st.write(f"Return if Lay wins: {lay_win_return_with_commission - sportsbook_stake :.4f}")
     st.write(f"Margin if Lay wins: {margin_if_lay_wins:.4f}%")
 
 if __name__ == "__main__":
